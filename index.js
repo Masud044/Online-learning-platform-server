@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const port =process.env.PORT || 5000;
@@ -50,6 +50,8 @@ async function run() {
    })
    app.get('/courses/:text',async(req,res)=>{
         const text = req.params.text;
+       
+        
       
      
         if(text =='Design'|| text=='WebDevelopment' || text =='DataScience'|| text =='ComputerScience' || text =='Marketing'){
@@ -60,6 +62,13 @@ async function run() {
        
       
         
+   })
+
+   app.get('/details/:id',async(req,res)=>{
+       const id = req.params.id;
+       const qurey = {_id: new ObjectId(id)}
+       const result = await onlineCollection.findOne(qurey);
+       res.send(result);
    })
   
 
