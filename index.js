@@ -41,11 +41,27 @@ async function run() {
       const result = await onlineCollection.insertOne(item);
       res.send(result);
    })
-   app.get('courses',async(req,res)=>{
+   app.get('/courses',async(req,res)=>{
       const item = req.body;
+     
+
       const result = await onlineCollection.find(item).toArray();
       res.send(result);
    })
+   app.get('/courses/:text',async(req,res)=>{
+        const text = req.params.text;
+      
+     
+        if(text =='Design'|| text=='WebDevelopment' || text =='DataScience'|| text =='ComputerScience' || text =='Marketing'){
+            const result = await onlineCollection.find( {category:text}).toArray();
+           
+            res.send(result); 
+        }
+       
+      
+        
+   })
+  
 
 
 
