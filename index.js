@@ -33,11 +33,12 @@ async function run() {
 
 
    const onlineCollection = client.db('OnlineLearning').collection('course');
+   const myCourseCollection = client.db('OnlineLearning').collection('MyCourse');
 
 
    app.post('/courses',async(req,res)=>{
       const item = req.body;
-      console.log(item);
+      
       const result = await onlineCollection.insertOne(item);
       res.send(result);
    })
@@ -70,6 +71,27 @@ async function run() {
        const result = await onlineCollection.findOne(qurey);
        res.send(result);
    })
+
+   app.post('/mycourse',async(req,res)=>{
+      const item = req.body;
+      const result = await myCourseCollection.insertOne(item);
+      console.log(result)
+      res.send(result);
+   })
+   app.get('/mycourse',async(req,res)=>{
+      const email = req.query.email;
+ 
+       if(!email){
+         res.send([]);
+       }
+      const query = {email: email}
+    
+      const result = await myCourseCollection.find(query).toArray();
+      res.send(result);
+   })
+  
+
+
   
 
 
