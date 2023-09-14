@@ -3,7 +3,7 @@ const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
-const port =process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 
 // middle ware
@@ -32,67 +32,113 @@ async function run() {
     await client.connect();
 
 
-   const onlineCollection = client.db('OnlineLearning').collection('course');
-   const myCourseCollection = client.db('OnlineLearning').collection('MyCourse');
+    const onlineCollection = client.db('OnlineLearning').collection('course');
+    const myCourseCollection = client.db('OnlineLearning').collection('MyCourse'); const userCollection = client.db('OnlineLearning').collection('User');
 
 
-   app.post('/courses',async(req,res)=>{
+
+    app.post('/courses', async (req, res) => {
       const item = req.body;
-      
+
       const result = await onlineCollection.insertOne(item);
       res.send(result);
-   })
-   app.get('/courses',async(req,res)=>{
+    })
+
+    app.post('/mycourse', async (req, res) => {
       const item = req.body;
+      const result = await myCourseCollection.insertOne(item);
+
+      res.send(result);
+    })
+
+    app.post('/user', async (req, res) => {
+      const item = req.body;
+      const result = await userCollection.insertOne(item);
+
+      res.send(result);
+    })
+
+    app.get('/user',async(req,res)=>{
+         const item = req.body;
+         const result = await userCollection.find(item).toArray();
+         res.send(result);
+    })
+
+    app.patch('/user/:id',async(req,res)=>{
+       const id = req.params.id;
+       const filter = {_id: new ObjectId(id)};
+       const updateDoc = {
+      $set: {
+          role:'admin'
+      },
+    }
+      const result = await userCollection.updateOne(filter,updateDoc);
+      res.send(result);
      
+    
+    })
+       
+
+    
+    app.get('/courses', async (req, res) => {
+      const item = req.body;
+
 
       const result = await onlineCollection.find(item).toArray();
       res.send(result);
-   })
-   app.get('/courses/:text',async(req,res)=>{
-        const text = req.params.text;
-       
-        
-      
-     
-        if(text =='Design'|| text=='WebDevelopment' || text =='DataScience'|| text =='ComputerScience' || text =='Marketing'){
-            const result = await onlineCollection.find( {category:text}).toArray();
-           
-            res.send(result); 
-        }
-       
-      
-        
-   })
+    })
+    app.get('/courses/:text', async (req, res) => {
+      const text = req.params.text;
+      const query = { category: text };
 
-   app.get('/details/:id',async(req,res)=>{
-       const id = req.params.id;
-       const qurey = {_id: new ObjectId(id)}
-       const result = await onlineCollection.findOne(qurey);
-       res.send(result);
-   })
 
-   app.post('/mycourse',async(req,res)=>{
-      const item = req.body;
-      const result = await myCourseCollection.insertOne(item);
-      console.log(result)
+      const result = await onlineCollection.find(query).toArray();
+
       res.send(result);
-   })
-   app.get('/mycourse',async(req,res)=>{
+
+
+
+
+    })
+
+    app.get('/details/:id', async (req, res) => {
+      const id = req.params.id;
+      const qurey = { _id: new ObjectId(id) }
+      const result = await onlineCollection.findOne(qurey);
+      res.send(result);
+    })
+
+
+    app.get('/mycourse', async (req, res) => {
       const email = req.query.email;
- 
-       if(!email){
-         res.send([]);
-       }
-      const query = {email: email}
-    
-      const result = await myCourseCollection.find(query).toArray();
+      const sort = req.query.sort;
+      const options = {
+
+        sort: { "courseFee": sort == 'asc' ? 1 : -1 },
+
+      };
+
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email }
+
+      const result = await myCourseCollection.find(query, options).toArray();
       res.send(result);
-   })
-  
+    })
+
+    app.delete('/delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await myCourseCollection.deleteOne(filter);
+      res.send(result);
+    })
 
 
-  
+
+
+
+
 
 
 
@@ -116,10 +162,10 @@ run().catch(console.dir);
 
 
 
-app.get('/',(req,res)=>{
-      res.send('Online learning coming')
+app.get('/', (req, res) => {
+  res.send('Online learning coming')
 })
 
-app.listen(port,()=>{
-    console.log(`port is running ${port}`);
+app.listen(port, () => {
+  console.log(`port is running ${port}`);
 })
