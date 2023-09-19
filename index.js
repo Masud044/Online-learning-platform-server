@@ -187,22 +187,7 @@ async function run() {
         res.send(result);
          
     })
-     app.patch('/feedback/:id',async(req,res)=>{
-        const id = req.params.id;
-         const filter = {_id: new ObjectId(id)};
-        const user = req.body;
-        console.log(user)
-        const updateDoc = {
-          $set:{
-             feedback:user.feedback,
-          }
-        
-        }
-        console.log(updateDoc)
-        const result = await onlineCollection.updateOne(filter,updateDoc);
-        res.send(result);
-         
-    })
+    
 
 
     app.delete('/deletecourse/:id',async(req,res)=>{
